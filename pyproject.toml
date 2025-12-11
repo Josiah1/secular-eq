@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "secular-equilibrium"
-version = "1.0.0"
+version = "1.0.1"
 description = "Secular equilibrium calculator for radioactive decay chains"
 readme = "README.md"
 authors = [

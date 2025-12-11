@@ -8,5 +8,5 @@ from .calculator import (
     calculate_secular_equilibrium
 )
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = ["SecularEquilibriumCalculator", "calculate_secular_equilibrium"]
