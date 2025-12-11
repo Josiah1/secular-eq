@@ -234,4 +234,4 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ## 📧 联系方式
 
-如有问题，请提交Issue或发送邮件至: your.email@example.com
+如有问题，请在GitHub上提交Issue。

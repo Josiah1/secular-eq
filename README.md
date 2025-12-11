@@ -234,4 +234,4 @@ Welcome to submit Issues and Pull Requests!
 
 ## 📧 Contact
 
-For questions, please submit an Issue or send email to: your.email@example.com
+For questions, please submit an Issue on GitHub.
