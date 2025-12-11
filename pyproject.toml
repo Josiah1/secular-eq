@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secular-equilibrium"
+version = "1.0.0"
+description = "Secular equilibrium calculator for radioactive decay chains"
+readme = "README.md"
+authors = [
+    {name = "Jinjing Li"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.7"
+dependencies = ["radioactivedecay>=0.6.0"]
+
+[project.scripts]
+secular-eq = "secular_equilibrium.cli:main"
+
+[tool.setuptools]
+packages = ["secular_equilibrium"]
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.md"]
