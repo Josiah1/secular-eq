@@ -12,6 +12,9 @@ Radioactive Decay Chain Secular Equilibrium Calculation Tool
 - Provide command-line interface (CLI) and Python API
 - Detailed error handling and input validation
 - Flexible output modes including quiet and mass-only outputs
+- Measurement uncertainty propagation for activity and mass outputs
+- Batch CSV processing mode for multi-sample calculations
+- Full decay-path explanation with per-path branching contributions
 
 ## 🔧 Installation
 
@@ -77,6 +80,18 @@ secular-eq -m Pb-214 -a 100 -p U-238 -d a
 
 # Mass-only output (only masses in grams, one per line)
 secular-eq -m Pb-214 -a 100 -p U-238 Ra-226 --mass-only
+
+# Include measured activity uncertainty (Bq)
+secular-eq -m Pb-214 -a 100 -p U-238 --activity-unc 5
+
+# Explain all parent-to-measured decay paths and path contributions
+secular-eq -m Ra-223 -a 100 -p Ac-227 --explain-paths
+
+# Batch mode from CSV (output to stdout)
+secular-eq --input-csv batch_inputs.csv
+
+# Batch mode with output file
+secular-eq --input-csv batch_inputs.csv --output-csv batch_outputs.csv
 ```
 
 ## 📊 Practical Application Examples
@@ -143,7 +158,9 @@ def calculate_secular_equilibrium(
     measured_activity: float,
     parent_nuclides: List[str],
     decay_type: Optional[str] = None,
-    verbose: bool = True
+    verbose: bool = True,
+    measured_activity_uncertainty: Optional[float] = None,
+    include_paths: bool = False,
 ) -> Dict[str, Dict[str, float]]
 ```
 
@@ -178,10 +195,38 @@ results = calculate_secular_equilibrium(
         'mass_g': 8.04e-6,              # Mass (g)
         'branching_ratio': 1.0,         # Branching ratio
         'halflife_yr': 4.468e9,         # Half-life (years)
-        'atomic_mass': 238.05078826     # Atomic mass (u)
+        'atomic_mass': 238.05078826,    # Atomic mass (u)
+        'activity_uncertainty_Bq': 5.0, # Optional uncertainty field
+        'mass_uncertainty_g': 4.02e-7,  # Optional uncertainty field
+        'relative_uncertainty': 0.05,   # Optional uncertainty field
+        'paths': [...]                  # Optional when include_paths=True
     }
 }
 ```
+
+## 🧾 Batch CSV Input/Output
+
+### Input CSV columns
+
+Required:
+- `measured_nuclide`
+- `measured_activity`
+- `parent_nuclides` (semicolon-separated, e.g., `U-238;Ra-226`)
+
+Optional:
+- `decay_type`
+- `measured_activity_uncertainty`
+
+### Output CSV columns
+
+Always includes input columns plus:
+- `parent`
+- `activity_Bq`, `mass_g`, `branching_ratio`, `halflife_yr`, `atomic_mass`
+- `activity_uncertainty_Bq`, `mass_uncertainty_g`, `relative_uncertainty` (when available)
+- `paths_json` (when `--explain-paths` is enabled)
+- `error` (row-level or parent-level errors)
+
+Batch mode continues processing on errors and returns non-zero exit code if any row fails.
 
 ## 🔬 Supported Decay Chains
 

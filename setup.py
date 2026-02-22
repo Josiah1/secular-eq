@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="secular-equilibrium",
-    version="1.0.1",
+    version="1.1.1",
     author="Jinjing Li",
     description="Secular equilibrium calculator for radioactive decay chains",
     long_description=open("README.md", encoding="utf-8").read(),

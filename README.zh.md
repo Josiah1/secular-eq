@@ -12,6 +12,9 @@
 - 提供命令行接口(CLI)和Python API
 - 详细的错误处理和输入验证
 - 灵活的输出来模式，包括静默和仅输出质量模式
+- 支持测量活度不确定度传播（输出活度/质量不确定度）
+- 支持批量 CSV 输入计算
+- 支持完整衰变路径解释与逐路径贡献输出
 
 ## 🔧 安装
 
@@ -77,6 +80,18 @@ secular-eq -m Pb-214 -a 100 -p U-238 -d a
 
 # 仅输出质量模式（只输出质量，单位克，每行一个）
 secular-eq -m Pb-214 -a 100 -p U-238 Ra-226 --mass-only
+
+# 输入测量活度不确定度（Bq）
+secular-eq -m Pb-214 -a 100 -p U-238 --activity-unc 5
+
+# 输出完整衰变路径及路径贡献
+secular-eq -m Ra-223 -a 100 -p Ac-227 --explain-paths
+
+# 批量模式（CSV 输入，输出到 stdout）
+secular-eq --input-csv batch_inputs.csv
+
+# 批量模式（输出到文件）
+secular-eq --input-csv batch_inputs.csv --output-csv batch_outputs.csv
 ```
 
 ## 📊 实际应用示例
@@ -143,7 +158,9 @@ def calculate_secular_equilibrium(
     measured_activity: float,
     parent_nuclides: List[str],
     decay_type: Optional[str] = None,
-    verbose: bool = True
+    verbose: bool = True,
+    measured_activity_uncertainty: Optional[float] = None,
+    include_paths: bool = False,
 ) -> Dict[str, Dict[str, float]]
 ```
 
@@ -178,10 +195,38 @@ results = calculate_secular_equilibrium(
         'mass_g': 8.04e-6,              # 质量 (g)
         'branching_ratio': 1.0,         # 分支比
         'halflife_yr': 4.468e9,         # 半衰期 (年)
-        'atomic_mass': 238.05078826     # 原子质量 (u)
+        'atomic_mass': 238.05078826,    # 原子质量 (u)
+        'activity_uncertainty_Bq': 5.0, # 可选：活度不确定度
+        'mass_uncertainty_g': 4.02e-7,  # 可选：质量不确定度
+        'relative_uncertainty': 0.05,   # 可选：相对不确定度
+        'paths': [...]                  # include_paths=True 时可选
     }
 }
 ```
+
+## 🧾 批量 CSV 输入输出
+
+### 输入 CSV 列
+
+必需：
+- `measured_nuclide`
+- `measured_activity`
+- `parent_nuclides`（用分号分隔，例如 `U-238;Ra-226`）
+
+可选：
+- `decay_type`
+- `measured_activity_uncertainty`
+
+### 输出 CSV 列
+
+除输入列外，还包括：
+- `parent`
+- `activity_Bq`, `mass_g`, `branching_ratio`, `halflife_yr`, `atomic_mass`
+- `activity_uncertainty_Bq`, `mass_uncertainty_g`, `relative_uncertainty`（如可用）
+- `paths_json`（开启 `--explain-paths` 时）
+- `error`（行级或母核素级错误）
+
+批量模式遇错会继续处理其余行；若存在错误行，程序返回非零退出码。
 
 ## 🔬 支持的衰变链
 
